@@ -6,91 +6,251 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".ChangeUsernameActivity"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="#121212">
+
+    <!-- Header with back button -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_marginHorizontal="5dp">
-        <androidx.cardview.widget.CardView
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            app:cardCornerRadius="10dp"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/primary"
-            android:elevation="10dp">
+        android:gravity="center_vertical"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp">
+
+        <!-- Circular back button -->
+        <FrameLayout
+            android:id="@+id/back_button"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/circle_black_white_border"
+            android:clickable="true"
+            android:focusable="true">
+
             <ImageView
-                android:id="@+id/back_img"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_back"
-                android:layout_gravity="center"/>
-        </androidx.cardview.widget.CardView>
-        <androidx.cardview.widget.CardView
-            android:layout_width="wrap_content"
-            android:layout_height="45dp"
-            app:cardCornerRadius="10dp"
-            android:layout_margin="10dp"
-            android:backgroundTint="@color/primary"
-            android:elevation="10dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Change your username"
                 android:layout_gravity="center"
-                android:textColor="@color/white"
-                android:textSize="25sp"
-                android:paddingVertical="5dp"
-                android:textStyle="bold"
-                android:paddingHorizontal="10dp"/>
-        </androidx.cardview.widget.CardView>
+                app:tint="@color/white"/>
+        </FrameLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Change Username"
+            android:textColor="@color/white"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_marginEnd="48dp"/>
     </LinearLayout>
 
-    <androidx.cardview.widget.CardView
-        android:id="@+id/search_view"
+    <!-- Username input field -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="20dp"
-        android:elevation="10dp"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginVertical="20dp">
+        android:orientation="horizontal"
+        android:background="@drawable/input_field_bg"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="32dp"
+        android:padding="16dp"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_username"
+            app:tint="#888888"
+            android:layout_marginEnd="12dp"/>
+
+        <EditText
+            android:id="@+id/username_input"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@null"
+            android:inputType="text"
+            android:hint="Enter username"
+            android:textColor="@color/white"
+            android:textColorHint="#666666"
+            android:textSize="16sp"
+            android:singleLine="true"
+            android:imeOptions="actionDone"/>
+
+        <ImageView
+            android:id="@+id/clear_button"
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_clear"
+            app:tint="#666666"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <!-- Validation criteria list -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp">
+
+        <!-- Lowercase only -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
             <ImageView
+                android:id="@+id/check_lowercase"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
-                android:src="@drawable/ic_username"
-                android:layout_margin="7dp"
-                android:layout_gravity="center"/>
-            <EditText
-                android:id="@+id/search_bar"
+                android:src="@drawable/ic_check_empty"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:background="@drawable/edit_text_bg"
-                android:inputType="text"
+                android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:hint="shuxrinho"
-                android:imeOptions="actionDone"
-                android:singleLine="true"
-                android:maxLines="1"
-                android:focusable="true"
-                android:clickable="true"
-                android:focusableInTouchMode="true"/>
-            <ImageView
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:src="@drawable/ic_go"
-                android:layout_gravity="center"
-                android:layout_marginEnd="5dp"
-                app:tint="@color/black"/>
+                android:text="Lowercase letters only"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"/>
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
 
+        <!-- No number at beginning -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:id="@+id/check_no_number_start"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_empty"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cannot start with a number"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- 3-15 characters -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:id="@+id/check_length"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_empty"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="3-15 characters long"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- No special characters (underscores allowed) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:id="@+id/check_special_chars"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_empty"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="No special characters (underscores allowed)"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <!-- Availability check -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingVertical="8dp">
+
+            <ImageView
+                android:id="@+id/check_availability"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_check_empty"
+                android:layout_marginEnd="12dp"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Username is available"
+                android:textColor="#AAAAAA"
+                android:textSize="14sp"/>
+
+            <ProgressBar
+                android:id="@+id/availability_progress"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:indeterminateTint="#00C853"
+                android:visibility="gone"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Spacer to push button down -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+
+    <!-- Save button using CustomButton -->
     <com.example.chineseapp.Helpers.CustomButton
-        android:layout_width=""
-        android:layout_height=""
+        android:id="@+id/save_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="32dp"
+        android:background="@drawable/button_disabled_bg"
+        android:clickable="false"
+        android:enabled="false">
 
+        <TextView
+            android:id="@+id/save_button_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Save"
+            android:textColor="#666666"
+            android:textSize="16sp"
+            android:textStyle="bold"/>
+    </com.example.chineseapp.Helpers.CustomButton>
 
 </LinearLayout>
