@@ -78,5 +78,4 @@
     <string name="launch_pinyin_game_prompt">Launching Guess the Pinyin activity directly.</string>
     <string name="launch_radical_game_prompt">Launching Radical Explorer activity.</string>
 
-    <string name="change_username_text">In this app, everyone has a unique id. You may change it any time you like, just make sure that it is not occupied by someone else. \nIf it's occupied, you may contact that user to agree to change it.</string>
-</resources>
+    </resources>

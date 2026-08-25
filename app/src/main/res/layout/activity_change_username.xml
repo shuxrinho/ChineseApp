@@ -15,26 +15,27 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:paddingTop="16dp"
-        android:paddingBottom="16dp">
+        android:fitsSystemWindows="true">
 
         <!-- Circular back button -->
-        <FrameLayout
+        <com.example.chineseapp.Helpers.CustomButton
             android:id="@+id/back_button"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginStart="16dp"
             android:background="@drawable/circle_black_white_border"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_back"
+                android:layout_width="23dp"
+                android:layout_height="26dp"
                 android:layout_gravity="center"
-                app:tint="@color/white"/>
-        </FrameLayout>
+                android:src="@drawable/ic_back"
+                app:tint="@color/white" />
+        </com.example.chineseapp.Helpers.CustomButton>
 
         <TextView
             android:layout_width="0dp"
@@ -45,7 +46,9 @@
             android:textSize="20sp"
             android:textStyle="bold"
             android:gravity="center"
-            android:layout_marginEnd="48dp"/>
+            android:layout_marginEnd="48dp"
+            android:layout_marginBottom="16dp"
+            android:layout_marginTop="16dp"/>
     </LinearLayout>
 
     <!-- Username input field -->
@@ -55,7 +58,7 @@
         android:orientation="horizontal"
         android:background="@drawable/input_field_bg"
         android:layout_marginHorizontal="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:padding="16dp"
         android:gravity="center_vertical">
 
