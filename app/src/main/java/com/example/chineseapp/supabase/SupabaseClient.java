@@ -142,7 +142,10 @@ public class SupabaseClient {
                 Log.e(TAG_HTTP, "HTTP FAIL code=" + response.code() + ", url=" + request.url() + ", body=" + bodyPreview);
                 throw new SupabaseHttpException(response.code(), body);
             }
-            Log.d(TAG_HTTP, "HTTP OK code=" + response.code() + ", url=" + request.url() + ", body=" + bodyPreview);
+            String successLogBody = request.url().encodedPath().startsWith("/auth/v1/")
+                    ? "<redacted auth response>"
+                    : bodyPreview;
+            Log.d(TAG_HTTP, "HTTP OK code=" + response.code() + ", url=" + request.url() + ", body=" + successLogBody);
 
             JSONObject wrapper = new JSONObject();
             wrapper.put("raw", body);
