@@ -173,6 +173,79 @@ public class SupabaseAuthRepository {
         });
     }
 
+    /**
+     * Checks the current password before asking Supabase Auth to send an email-change OTP.
+     * The password is used only for this request and is never persisted locally.
+     */
+    public void requestEmailChange(String currentPassword, String newEmail, ResultCallback<Boolean> callback) {
+        io.execute(() -> {
+            try {
+                ensureConfigured();
+                if (!SessionManager.isLoggedIn(context)) {
+                    throw new IOException("Please log in again before changing your email.");
+                }
+
+                String currentEmail = SessionManager.getEmail(context);
+                if (currentEmail.isEmpty()) {
+                    throw new IOException("Your current email is unavailable. Please log in again.");
+                }
+
+                // A password-grant request validates the password without replacing the active session.
+                client.postAuth("/auth/v1/token?grant_type=password", new JSONObject()
+                        .put("email", currentEmail)
+                        .put("password", currentPassword));
+
+                client.putAuthWithSession("/auth/v1/user", new JSONObject().put("email", newEmail));
+                postSuccess(callback, true);
+            } catch (Exception e) {
+                Log.e(TAG_AUTH, "Email-change request failed: " + e.getMessage(), e);
+                postError(callback, emailChangeMessageFromException(e));
+            }
+        });
+    }
+
+    /** Verifies Supabase's six-digit email-change OTP and synchronizes the retained session. */
+    public void confirmEmailChange(String newEmail, String code, ResultCallback<SupabaseUser> callback) {
+        io.execute(() -> {
+            try {
+                ensureConfigured();
+                JSONObject response = client.postAuth("/auth/v1/verify", new JSONObject()
+                        .put("type", "email_change")
+                        .put("email", newEmail)
+                        .put("token", code));
+                JSONObject parsed = new JSONObject(response.getString("raw"));
+                JSONObject session = parsed.optJSONObject("session");
+                String access = parsed.optString("access_token", session == null ? "" : session.optString("access_token", ""));
+                String refresh = parsed.optString("refresh_token", session == null ? "" : session.optString("refresh_token", ""));
+                JSONObject user = parsed.optJSONObject("user");
+                if (user == null) {
+                    throw new IOException("Email confirmation succeeded but Supabase did not return the updated user.");
+                }
+
+                String userId = user.optString("id", SessionManager.getUserId(context));
+                String confirmedEmail = user.optString("email", newEmail);
+                SupabaseUser current = SessionManager.getUser(context);
+                String username = current == null ? SessionManager.getUsername(context) : current.username;
+                String avatarUrl = current == null ? SessionManager.getAvatarUrl(context) : current.avatarUrl;
+                if (access.isEmpty()) {
+                    access = client.refreshSession();
+                    refresh = SessionManager.getRefreshToken(context);
+                }
+                if (access.isEmpty()) {
+                    throw new IOException("Your email was confirmed, but the session could not be refreshed. Please log in again.");
+                }
+
+                SessionManager.saveSession(context, access, refresh, userId, confirmedEmail, username, avatarUrl);
+                SupabaseUser updated = updateProfileEmail(userId, confirmedEmail, username, avatarUrl);
+                SessionManager.saveUser(context, updated);
+                postSuccess(callback, updated);
+            } catch (Exception e) {
+                Log.e(TAG_AUTH, "Email-change confirmation failed: " + e.getMessage(), e);
+                postError(callback, emailChangeMessageFromException(e));
+            }
+        });
+    }
+
     private void ensureConfigured() throws IOException {
         if (!SupabaseClient.hasConfig()) {
             Log.e(TAG_AUTH, "Supabase config missing or placeholder values are still set.");
@@ -212,6 +285,30 @@ public class SupabaseAuthRepository {
             return "App is not configured: set SUPABASE_URL and SUPABASE_ANON_KEY in local.properties.";
         }
 
+        return raw;
+    }
+
+    private SupabaseUser updateProfileEmail(String userId, String email, String username, String avatarUrl) throws Exception {
+        JSONObject payload = new JSONObject()
+                .put("id", userId)
+                .put("email", safe(email))
+                .put("username", safe(username))
+                .put("avatar_url", safe(avatarUrl));
+        JSONObject response = client.upsertRest("profiles?on_conflict=id", payload, true);
+        JSONArray rows = new JSONArray(response.getString("raw"));
+        JSONObject row = rows.length() > 0 ? rows.optJSONObject(0) : null;
+        return row == null ? new SupabaseUser(userId, email, username, avatarUrl)
+                : userFromProfile(row, userId, email, username, avatarUrl);
+    }
+
+    private String emailChangeMessageFromException(Exception e) {
+        String raw = e.getMessage() == null ? "Email change failed." : e.getMessage();
+        String lower = raw.toLowerCase();
+        if (lower.contains("invalid_login_credentials")) return "Your current password is incorrect.";
+        if (lower.contains("otp_expired") || lower.contains("token has expired")) return "That code has expired. Request a new one.";
+        if (lower.contains("otp_disabled") || lower.contains("invalid token") || lower.contains("token is invalid")) return "That code is invalid. Check it and try again.";
+        if (lower.contains("email_exists") || lower.contains("already registered")) return "That email address is already in use.";
+        if (lower.contains("over_email_send_rate_limit") || lower.contains("rate limit")) return "Too many codes were requested. Please wait a few minutes.";
         return raw;
     }
 

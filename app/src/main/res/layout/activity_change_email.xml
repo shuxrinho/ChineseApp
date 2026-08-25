@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/bg_profile_screen"
+    android:fitsSystemWindows="true">
+
+    <com.example.chineseapp.Helpers.CustomButton
+        android:id="@+id/back_button"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/circle_black_white_border">
+        <ImageView android:layout_width="23dp" android:layout_height="26dp" android:layout_gravity="center"
+            android:src="@drawable/ic_back" app:tint="@color/white" />
+    </com.example.chineseapp.Helpers.CustomButton>
+
+    <ScrollView android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+        android:fillViewport="true" android:clipToPadding="false">
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical"
+            android:paddingHorizontal="24dp" android:paddingTop="18dp" android:paddingBottom="24dp">
+            <LinearLayout android:id="@+id/change_email_card" android:layout_width="match_parent" android:layout_height="wrap_content"
+                android:orientation="vertical" android:background="@drawable/bg_profile_card" android:padding="22dp">
+                <ImageView android:layout_width="44dp" android:layout_height="44dp" android:src="@drawable/ic_email"
+                    app:tint="#65E8A2" android:background="@drawable/bg_profile_icon_chip" android:padding="10dp" />
+                <TextView android:id="@+id/change_email_heading" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="20dp" android:text="Change your email" android:textColor="@color/white"
+                    android:textSize="25sp" android:textStyle="bold" />
+                <TextView android:id="@+id/change_email_description" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp" android:text="Confirm your password, then we’ll send a secure code to your new address."
+                    android:textColor="#AEB8C4" android:textSize="15sp" android:lineSpacingExtra="3dp" />
+                <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="24dp"
+                    android:text="CURRENT EMAIL" android:textColor="#7F8A98" android:textSize="11sp" android:textStyle="bold" />
+                <TextView android:id="@+id/current_email" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp" android:textColor="#E7EDF5" android:textSize="16sp" />
+                <EditText android:id="@+id/current_password_input" android:layout_width="match_parent" android:layout_height="56dp"
+                    android:layout_marginTop="24dp" android:background="@drawable/input_field_bg" android:hint="Current password"
+                    android:paddingHorizontal="16dp" android:inputType="textPassword" android:imeOptions="actionNext"
+                    android:textColor="@color/white" android:textColorHint="#7F8A98" android:singleLine="true" />
+                <LinearLayout android:id="@+id/new_email_section" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical">
+                    <EditText android:id="@+id/new_email_input" android:layout_width="match_parent" android:layout_height="56dp"
+                        android:layout_marginTop="12dp" android:background="@drawable/input_field_bg" android:hint="New email address"
+                        android:paddingHorizontal="16dp" android:inputType="textEmailAddress" android:imeOptions="actionDone"
+                        android:textColor="@color/white" android:textColorHint="#7F8A98" android:singleLine="true" />
+                </LinearLayout>
+                <LinearLayout android:id="@+id/code_section" android:layout_width="match_parent" android:layout_height="wrap_content"
+                    android:orientation="vertical" android:visibility="gone">
+                    <TextView android:id="@+id/code_destination" android:layout_width="match_parent" android:layout_height="wrap_content"
+                        android:layout_marginTop="24dp" android:textColor="#AEB8C4" android:textSize="15sp" android:lineSpacingExtra="3dp" />
+                    <EditText android:id="@+id/confirmation_code_input" android:layout_width="match_parent" android:layout_height="60dp"
+                        android:layout_marginTop="16dp" android:background="@drawable/input_field_bg" android:hint="000000"
+                        android:gravity="center" android:letterSpacing="0.2" android:paddingHorizontal="16dp" android:inputType="number"
+                        android:maxLength="6" android:textColor="@color/white" android:textColorHint="#596574" android:textSize="24sp" android:singleLine="true" />
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <com.example.chineseapp.Helpers.CustomButton android:id="@+id/change_email_button" android:layout_width="match_parent"
+        android:layout_height="56dp" android:layout_marginHorizontal="24dp" android:layout_marginBottom="28dp" android:background="@drawable/button_enabled_bg">
+        <TextView android:id="@+id/change_email_button_text" android:layout_width="wrap_content" android:layout_height="wrap_content"
+            android:layout_gravity="center" android:text="Send confirmation code" android:textColor="@color/white" android:textSize="16sp" android:textStyle="bold" />
+    </com.example.chineseapp.Helpers.CustomButton>
+</LinearLayout>

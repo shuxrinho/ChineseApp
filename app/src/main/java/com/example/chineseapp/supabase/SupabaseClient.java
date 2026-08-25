@@ -45,6 +45,25 @@ public class SupabaseClient {
         return executeJson(request);
     }
 
+    public JSONObject postAuthWithSession(String path, JSONObject payload) throws IOException {
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request.Builder builder = baseBuilder(path)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + SessionManager.getAccessToken(context))
+                .post(body);
+        return executeJsonWithAuthRetry(builder.build(), true);
+    }
+
+    /** Supabase GoTrue updates the authenticated user through PUT /auth/v1/user. */
+    public JSONObject putAuthWithSession(String path, JSONObject payload) throws IOException {
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request.Builder builder = baseBuilder(path)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + SessionManager.getAccessToken(context))
+                .put(body);
+        return executeJsonWithAuthRetry(builder.build(), true);
+    }
+
     public JSONObject postRpc(String functionName, JSONObject payload, boolean withAuth) throws IOException {
         RequestBody body = RequestBody.create(payload.toString(), JSON);
         Request.Builder builder = baseBuilder("/rest/v1/rpc/" + functionName)
@@ -124,7 +143,10 @@ public class SupabaseClient {
                 Log.e(TAG_HTTP, "HTTP FAIL code=" + response.code() + ", url=" + request.url() + ", body=" + bodyPreview);
                 throw new SupabaseHttpException(response.code(), body);
             }
-            Log.d(TAG_HTTP, "HTTP OK code=" + response.code() + ", url=" + request.url() + ", body=" + bodyPreview);
+            String successLogBody = request.url().encodedPath().startsWith("/auth/v1/")
+                    ? "<redacted auth response>"
+                    : bodyPreview;
+            Log.d(TAG_HTTP, "HTTP OK code=" + response.code() + ", url=" + request.url() + ", body=" + successLogBody);
 
             JSONObject wrapper = new JSONObject();
             wrapper.put("raw", body);

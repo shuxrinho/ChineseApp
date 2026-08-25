@@ -175,6 +175,31 @@ $$;
 
 grant execute on function public.update_profile_username(text) to authenticated;
 
+-- Keep the public profile display email in sync with Auth after an email-change OTP is verified.
+-- This runs with database privileges because auth.users is managed by Supabase Auth.
+create or replace function public.sync_profile_email_from_auth()
+returns trigger
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+    if new.email is distinct from old.email then
+        update public.profiles
+        set email = new.email
+        where id = new.id;
+    end if;
+    return new;
+end;
+$$;
+
+drop trigger if exists on_auth_user_email_changed on auth.users;
+create trigger on_auth_user_email_changed
+after update of email on auth.users
+for each row
+when (old.email is distinct from new.email)
+execute function public.sync_profile_email_from_auth();
+
 -- Public avatar storage. Files are written under avatars/{auth.uid()}/avatar.jpg.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (

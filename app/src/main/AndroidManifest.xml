@@ -16,6 +16,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ChineseApp">
         <activity
+            android:name=".ChangeEmailActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChangeUsernameActivity"
             android:exported="false" />
         <activity
