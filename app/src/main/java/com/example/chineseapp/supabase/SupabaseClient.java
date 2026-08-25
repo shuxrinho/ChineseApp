@@ -54,13 +54,12 @@ public class SupabaseClient {
         return executeJsonWithAuthRetry(builder.build(), true);
     }
 
-    /** Supabase GoTrue updates the authenticated user through PUT /auth/v1/user. */
-    public JSONObject putAuthWithSession(String path, JSONObject payload) throws IOException {
+    public JSONObject patchAuthWithSession(String path, JSONObject payload) throws IOException {
         RequestBody body = RequestBody.create(payload.toString(), JSON);
         Request.Builder builder = baseBuilder(path)
                 .header("Content-Type", "application/json")
                 .header("Authorization", "Bearer " + SessionManager.getAccessToken(context))
-                .put(body);
+                .patch(body);
         return executeJsonWithAuthRetry(builder.build(), true);
     }
 

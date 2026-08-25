@@ -82,7 +82,7 @@ The Change Email screen verifies the current password, requests an Auth email ch
 4. In **Authentication → Settings**, set an appropriate OTP expiry and email-send rate limit for your application. Do not expose a service-role key in the Android app.
 5. Open **SQL Editor**, paste and run the full current [`docs/supabase_schema.sql`](./supabase_schema.sql). Its `on_auth_user_email_changed` trigger keeps `public.profiles.email` consistent with the Supabase Auth email after verification.
 
-The Android client uses only the anon key, password grant, authenticated `PUT /auth/v1/user`, and `POST /auth/v1/verify` with `type: email_change`; no passwords or OTPs are stored in the app database.
+The Android client uses only the anon key, password grant, authenticated `PATCH /auth/v1/user`, and `POST /auth/v1/verify` with `type: email_change`; no passwords or OTPs are stored in the app database.
 
 ## Notes
 - If you keep email confirmation ON, signup can succeed without returning an access token immediately; user must verify email and then log in.

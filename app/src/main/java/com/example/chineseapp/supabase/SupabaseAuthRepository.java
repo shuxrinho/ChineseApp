@@ -195,7 +195,7 @@ public class SupabaseAuthRepository {
                         .put("email", currentEmail)
                         .put("password", currentPassword));
 
-                client.putAuthWithSession("/auth/v1/user", new JSONObject().put("email", newEmail));
+                client.patchAuthWithSession("/auth/v1/user", new JSONObject().put("email", newEmail));
                 postSuccess(callback, true);
             } catch (Exception e) {
                 Log.e(TAG_AUTH, "Email-change request failed: " + e.getMessage(), e);
