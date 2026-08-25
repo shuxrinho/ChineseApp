@@ -183,7 +183,7 @@ public class ProfileActivity extends AppCompatActivity {
             });
         });
 
-        changeEmail.setOnClickListener(v -> {});
+        changeEmail.setOnClickListener(v -> gotoActivity(ChangeEmailActivity.class));
         changeUsername.setOnClickListener(v -> gotoActivity(ChangeUsernameActivity.class));
         goalsBtn.setOnClickListener(v -> {gotoActivity(StreakActivity.class);});
         checkDatasets.setOnClickListener(v -> gotoActivity(DatasetUpdateActivity.class));

@@ -45,6 +45,24 @@ public class SupabaseClient {
         return executeJson(request);
     }
 
+    public JSONObject postAuthWithSession(String path, JSONObject payload) throws IOException {
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request.Builder builder = baseBuilder(path)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + SessionManager.getAccessToken(context))
+                .post(body);
+        return executeJsonWithAuthRetry(builder.build(), true);
+    }
+
+    public JSONObject patchAuthWithSession(String path, JSONObject payload) throws IOException {
+        RequestBody body = RequestBody.create(payload.toString(), JSON);
+        Request.Builder builder = baseBuilder(path)
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + SessionManager.getAccessToken(context))
+                .patch(body);
+        return executeJsonWithAuthRetry(builder.build(), true);
+    }
+
     public JSONObject postRpc(String functionName, JSONObject payload, boolean withAuth) throws IOException {
         RequestBody body = RequestBody.create(payload.toString(), JSON);
         Request.Builder builder = baseBuilder("/rest/v1/rpc/" + functionName)
