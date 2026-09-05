@@ -59,12 +59,14 @@ public class SupabaseAuthRepository {
                 JSONObject userMeta = user.optJSONObject("user_metadata");
                 String userName = username;
                 String avatarUrl = "";
+                boolean emailConfirmed = user.optBoolean("email_confirmed", false);
                 if (userMeta != null) {
                     userName = userMeta.optString("username", username);
                     avatarUrl = userMeta.optString("avatar_url", "");
                 }
                 Log.d(TAG_AUTH, "signUp user metadata. userId=" + userId
-                        + ", avatarPresent=" + !avatarUrl.isEmpty());
+                        + ", avatarPresent=" + !avatarUrl.isEmpty()
+                        + ", emailConfirmed=" + emailConfirmed);
 
                 String access = parsed.optString("access_token", "");
                 String refresh = parsed.optString("refresh_token", "");
@@ -81,7 +83,7 @@ public class SupabaseAuthRepository {
 
                 if (!access.isEmpty() && !userId.isEmpty()) {
                     SessionManager.saveSession(context, access, refresh, userId, userEmail, userName, avatarUrl);
-                    SupabaseUser profileUser = resolveProfileWithoutBlockingAuth(userId, userEmail, userName, avatarUrl);
+                    SupabaseUser profileUser = resolveProfileWithoutBlockingAuth(userId, userEmail, userName, avatarUrl, emailConfirmed);
                     SessionManager.saveUser(context, profileUser);
                     userName = profileUser.username;
                     userEmail = profileUser.email;
@@ -93,7 +95,7 @@ public class SupabaseAuthRepository {
                     throw new IOException("Signup returned without user id.");
                 }
 
-                postSuccess(callback, new SupabaseUser(userId, userEmail, userName, avatarUrl));
+                postSuccess(callback, new SupabaseUser(userId, userEmail, userName, avatarUrl, emailConfirmed));
             } catch (Exception e) {
                 Log.e(TAG_AUTH, "signUp failed: " + e.getMessage(), e);
                 postError(callback, messageFromException(e));
@@ -125,8 +127,10 @@ public class SupabaseAuthRepository {
                 JSONObject appMeta = user.optJSONObject("user_metadata");
                 String username = appMeta != null ? appMeta.optString("username", "") : "";
                 String avatarUrl = appMeta != null ? appMeta.optString("avatar_url", "") : "";
+                boolean emailConfirmed = user.optBoolean("email_confirmed", false);
                 Log.d(TAG_AUTH, "signIn user metadata. userId=" + userId
-                        + ", avatarPresent=" + !avatarUrl.isEmpty());
+                        + ", avatarPresent=" + !avatarUrl.isEmpty()
+                        + ", emailConfirmed=" + emailConfirmed);
 
                 String access = parsed.optString("access_token", "");
                 String refresh = parsed.optString("refresh_token", "");
@@ -144,7 +148,7 @@ public class SupabaseAuthRepository {
                 }
 
                 SessionManager.saveSession(context, access, refresh, userId, userEmail, username, avatarUrl);
-                SupabaseUser profileUser = resolveProfileWithoutBlockingAuth(userId, userEmail, username, avatarUrl);
+                SupabaseUser profileUser = resolveProfileWithoutBlockingAuth(userId, userEmail, username, avatarUrl, emailConfirmed);
                 SessionManager.saveUser(context, profileUser);
                 Log.d(TAG_AUTH, "signIn success: userId=" + userId + ", username=" + profileUser.username);
                 postSuccess(callback, profileUser);
@@ -219,13 +223,14 @@ public class SupabaseAuthRepository {
             String userId,
             String email,
             String username,
-            String avatarUrl
+            String avatarUrl,
+            boolean emailConfirmed
     ) {
         try {
-            return loadOrCreateProfile(userId, email, username, avatarUrl);
+            return loadOrCreateProfile(userId, email, username, avatarUrl, emailConfirmed);
         } catch (Exception e) {
             Log.e(TAG_AUTH, "Profile lookup failed after auth success: " + e.getMessage(), e);
-            return new SupabaseUser(userId, email, username, avatarUrl);
+            return new SupabaseUser(userId, email, username, avatarUrl, emailConfirmed);
         }
     }
 
@@ -233,10 +238,11 @@ public class SupabaseAuthRepository {
             String userId,
             String email,
             String username,
-            String avatarUrl
+            String avatarUrl,
+            boolean emailConfirmed
     ) throws Exception {
         Log.d(TAG_AUTH, "Loading profile row. userId=" + userId);
-        SupabaseUser loaded = fetchProfile(userId, email, username, avatarUrl);
+        SupabaseUser loaded = fetchProfile(userId, email, username, avatarUrl, emailConfirmed);
         if (loaded != null) {
             Log.d(TAG_AUTH, "Profile row found. userId=" + userId
                     + ", avatarPresent=" + (loaded.avatarUrl != null && !loaded.avatarUrl.isEmpty()));
@@ -256,17 +262,18 @@ public class SupabaseAuthRepository {
         if (array.length() > 0) {
             JSONObject profile = array.optJSONObject(0);
             if (profile != null) {
-                return userFromProfile(profile, userId, email, username, avatarUrl);
+                return userFromProfile(profile, userId, email, username, avatarUrl, emailConfirmed);
             }
         }
-        return new SupabaseUser(userId, email, username, avatarUrl);
+        return new SupabaseUser(userId, email, username, avatarUrl, emailConfirmed);
     }
 
     private SupabaseUser fetchProfile(
             String userId,
             String email,
             String username,
-            String avatarUrl
+            String avatarUrl,
+            boolean emailConfirmed
     ) throws Exception {
         JSONObject response = client.getRest(
                 "profiles?id=eq." + userId + "&select=id,email,username,avatar_url",
@@ -278,7 +285,7 @@ public class SupabaseAuthRepository {
 
         JSONObject profile = array.optJSONObject(0);
         if (profile == null) return null;
-        return userFromProfile(profile, userId, email, username, avatarUrl);
+        return userFromProfile(profile, userId, email, username, avatarUrl, emailConfirmed);
     }
 
     private SupabaseUser userFromProfile(
@@ -286,13 +293,14 @@ public class SupabaseAuthRepository {
             String fallbackId,
             String fallbackEmail,
             String fallbackUsername,
-            String fallbackAvatarUrl
+            String fallbackAvatarUrl,
+            boolean emailConfirmed
     ) {
         String id = profile.optString("id", fallbackId);
         String email = firstNonEmpty(profile.optString("email", ""), fallbackEmail);
         String username = firstNonEmpty(profile.optString("username", ""), fallbackUsername);
         String avatarUrl = firstNonEmpty(profile.optString("avatar_url", ""), fallbackAvatarUrl);
-        return new SupabaseUser(id, email, username, avatarUrl);
+        return new SupabaseUser(id, email, username, avatarUrl, emailConfirmed);
     }
 
     private String firstNonEmpty(String preferred, String fallback) {

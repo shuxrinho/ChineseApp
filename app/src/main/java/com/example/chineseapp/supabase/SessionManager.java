@@ -11,6 +11,7 @@ public class SessionManager {
     private static final String KEY_EMAIL = "email";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_AVATAR_URL = "avatar_url";
+    private static final String KEY_EMAIL_CONFIRMED = "email_confirmed";
 
     private SessionManager() {
     }
@@ -47,25 +48,34 @@ public class SessionManager {
 
     public static void saveUser(Context context, SupabaseUser user) {
         if (user == null) return;
-        saveSession(
-                context,
-                getAccessToken(context),
-                getRefreshToken(context),
-                user.id,
-                user.email,
-                user.username,
-                user.avatarUrl
-        );
+        SharedPreferences.Editor editor = prefs(context).edit();
+        editor.putString(KEY_ACCESS_TOKEN, getAccessToken(context));
+        editor.putString(KEY_REFRESH_TOKEN, getRefreshToken(context));
+        editor.putString(KEY_USER_ID, safe(user.id));
+        editor.putString(KEY_EMAIL, safe(user.email));
+        editor.putString(KEY_USERNAME, safe(user.username));
+        editor.putString(KEY_AVATAR_URL, safe(user.avatarUrl));
+        editor.putBoolean(KEY_EMAIL_CONFIRMED, user.emailConfirmed);
+        editor.apply();
     }
 
     public static SupabaseUser getUser(Context context) {
         String id = getUserId(context);
         if (id.isEmpty()) return null;
-        return new SupabaseUser(id, getEmail(context), getUsername(context), getAvatarUrl(context));
+        boolean emailConfirmed = isEmailConfirmed(context);
+        return new SupabaseUser(id, getEmail(context), getUsername(context), getAvatarUrl(context), emailConfirmed);
     }
 
     public static boolean isLoggedIn(Context context) {
         return !getAccessToken(context).isEmpty() && !getUserId(context).isEmpty();
+    }
+
+    public static boolean isEmailConfirmed(Context context) {
+        return prefs(context).getBoolean(KEY_EMAIL_CONFIRMED, false);
+    }
+
+    public static void setEmailConfirmed(Context context, boolean confirmed) {
+        prefs(context).edit().putBoolean(KEY_EMAIL_CONFIRMED, confirmed).apply();
     }
 
     public static String getAccessToken(Context context) {
