@@ -67,20 +67,25 @@ public class SignupActivity extends AppCompatActivity {
             authRepository.signUp(email, password, username, new ResultCallback<>() {
                 @Override
                 public void onSuccess(SupabaseUser value) {
-                    Log.d(TAG_SIGNUP_UI, "Signup success callback. userId=" + value.id + ", email=" + value.email);
+                    Log.d(TAG_SIGNUP_UI, "Signup success callback. userId=" + value.id + ", email=" + value.email + ", emailConfirmed=" + value.emailConfirmed);
                     signupButton.setEnabled(true);
-                    if (SessionManager.isLoggedIn(SignupActivity.this)) {
-                        Toast.makeText(SignupActivity.this, "Account created. You are now signed in.", Toast.LENGTH_LONG).show();
-                        startActivity(new Intent(SignupActivity.this, MainActivity.class));
-                    } else {
+                    
+                    // When email confirmation is enabled, Supabase returns emailConfirmed=false
+                    // and no session tokens. User must confirm email before logging in.
+                    if (!value.emailConfirmed) {
                         Toast.makeText(
                                 SignupActivity.this,
-                                "Account created. Confirm your email from inbox/spam, then log in.",
+                                "Account created. Please check your email inbox (and spam folder) for the confirmation link. Click the link to activate your account, then log in.",
                                 Toast.LENGTH_LONG
                         ).show();
                         startActivity(new Intent(SignupActivity.this, LoginActivity.class));
+                        finishAffinity();
+                    } else {
+                        // Email already confirmed (rare case with certain configurations)
+                        Toast.makeText(SignupActivity.this, "Account created. You are now signed in.", Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(SignupActivity.this, MainActivity.class));
+                        finishAffinity();
                     }
-                    finishAffinity();
                 }
 
                 @Override

@@ -134,8 +134,9 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail = findViewById(R.id.profile_email);
         usernameSecondary = findViewById(R.id.username_secondary);
         emailSecondary = findViewById(R.id.email_secondary);
+        TextView emailNotConfirmedWarning = findViewById(R.id.profile_email_not_confirmed);
 
-        renderUser(SessionManager.getUser(this));
+        renderUser(SessionManager.getUser(this), emailNotConfirmedWarning);
 
         pullSyncContainer.setPullPermissionProvider(() -> profileScroll != null && !profileScroll.canScrollVertically(-1));
 
@@ -258,17 +259,22 @@ public class ProfileActivity extends AppCompatActivity {
         );
     }
 
-    private void renderUser(SupabaseUser user) {
+    private void renderUser(SupabaseUser user, TextView emailNotConfirmedWarning) {
         if (user == null) {
             Log.w(TAG_PROFILE, "renderUser called with null user.");
             loadAvatar("");
+            if (emailNotConfirmedWarning != null) {
+                emailNotConfirmedWarning.setVisibility(View.GONE);
+            }
             return;
         }
 
         Log.d(TAG_PROFILE, "Rendering user. id=" + user.id
                 + ", emailPresent=" + (user.email != null && !user.email.isEmpty())
                 + ", usernamePresent=" + (user.username != null && !user.username.isEmpty())
-                + ", avatarPresent=" + (user.avatarUrl != null && !user.avatarUrl.isEmpty()));
+                + ", avatarPresent=" + (user.avatarUrl != null && !user.avatarUrl.isEmpty())
+                + ", emailConfirmed=" + user.emailConfirmed);
+        
         if (user.username != null && !user.username.isEmpty()) {
             profileName.setText(user.username);
             usernameSecondary.setText(user.username);
@@ -277,6 +283,16 @@ public class ProfileActivity extends AppCompatActivity {
             profileEmail.setText(user.email);
             emailSecondary.setText(user.email);
         }
+        
+        // Show/hide email confirmation warning based on emailConfirmed status
+        if (emailNotConfirmedWarning != null) {
+            if (user.emailConfirmed) {
+                emailNotConfirmedWarning.setVisibility(View.GONE);
+            } else {
+                emailNotConfirmedWarning.setVisibility(View.VISIBLE);
+            }
+        }
+        
         loadAvatar(user.avatarUrl);
     }
 
@@ -296,7 +312,7 @@ public class ProfileActivity extends AppCompatActivity {
                         Log.d(TAG_PROFILE, "Profile avatar_url update succeeded. userId="
                                 + (user == null ? "" : user.id));
                         setAvatarUploadInProgress(false);
-                        renderUser(user);
+                        renderUser(user, emailNotConfirmedWarning);
                         Toast.makeText(ProfileActivity.this, "Profile photo updated.", Toast.LENGTH_SHORT).show();
                     }
 
