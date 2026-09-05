@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Your Email</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background-color: #090D13;
+            color: #F5FFF8;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .card {
+            background: linear-gradient(135deg, #0F2A1B 0%, #0B3D22 50%, #0F2A1B 100%);
+            border-radius: 28px;
+            border: 2px solid #2A8A58;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #203C34 0%, #145045 100%);
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+        
+        .logo svg {
+            width: 48px;
+            height: 48px;
+            fill: #71F2A3;
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: bold;
+            color: #F5FFF8;
+            margin-bottom: 16px;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #BAD2C5;
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+        
+        .button {
+            display: inline-block;
+            background: linear-gradient(135deg, #00C853 0%, #009624 100%);
+            color: #FFFFFF;
+            text-decoration: none;
+            padding: 16px 48px;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            text-transform: none;
+            margin-bottom: 24px;
+            transition: transform 0.2s ease;
+        }
+        
+        .button:hover {
+            transform: scale(1.02);
+        }
+        
+        .divider {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, #2A8A58, #2D735F);
+            margin: 24px auto;
+        }
+        
+        .secondary-text {
+            font-size: 14px;
+            color: #757575;
+            margin-top: 16px;
+        }
+        
+        .email-address {
+            background: #172B22;
+            border: 1px solid #2D735F;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            color: #DFF4E7;
+            display: inline-block;
+            margin: 16px 0;
+            word-break: break-all;
+        }
+        
+        .footer {
+            margin-top: 32px;
+            padding-top: 24px;
+            border-top: 1px solid #2D735F;
+        }
+        
+        .footer-text {
+            font-size: 13px;
+            color: #757575;
+            line-height: 1.5;
+        }
+        
+        .warning-box {
+            background: #172B22;
+            border-left: 3px solid #00C853;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 24px 0;
+            text-align: left;
+        }
+        
+        .warning-text {
+            font-size: 14px;
+            color: #DFF4E7;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <!-- Logo Icon -->
+            <div class="logo">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+            </div>
+            
+            <h1>Confirm Your Email</h1>
+            
+            <p class="message">
+                Welcome! Please confirm your email address to activate your account and get started.
+            </p>
+            
+            <div class="email-address">
+                {{ .Email }}
+            </div>
+            
+            <div class="divider"></div>
+            
+            <!-- Confirmation Button -->
+            <a href="{{ .ConfirmationURL }}" class="button">
+                Confirm Email Address
+            </a>
+            
+            <div class="warning-box">
+                <p class="warning-text">
+                    <strong>Can't click the button?</strong><br>
+                    Copy and paste this link into your browser:<br>
+                    <span style="color: #71F2A3; word-break: break-all;">{{ .ConfirmationURL }}</span>
+                </p>
+            </div>
+            
+            <div class="footer">
+                <p class="footer-text">
+                    If you didn't create an account, you can safely ignore this email.<br>
+                    This confirmation link will expire in 24 hours.
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

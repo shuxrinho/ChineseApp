@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="24dp"
-    android:background="#F5FAF7">
+    android:background="@drawable/bg_login_screen">
 
     <TextView
         android:id="@+id/title"
@@ -13,7 +13,7 @@
         android:text="Create your account"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:textColor="#15271B"
+        android:textColor="#F5FFF8"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,8 +26,10 @@
         android:layout_marginTop="30dp"
         android:hint="Username"
         android:inputType="text"
-        android:background="@drawable/input_design"
+        android:background="@drawable/input_design_dark"
         android:paddingHorizontal="14dp"
+        android:textColor="#F5FFF8"
+        android:textColorHint="#BAD2C5"
         app:layout_constraintTop_toBottomOf="@id/title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -39,8 +41,10 @@
         android:layout_marginTop="12dp"
         android:hint="Email"
         android:inputType="textEmailAddress"
-        android:background="@drawable/input_design"
+        android:background="@drawable/input_design_dark"
         android:paddingHorizontal="14dp"
+        android:textColor="#F5FFF8"
+        android:textColorHint="#BAD2C5"
         app:layout_constraintTop_toBottomOf="@id/username_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -52,8 +56,10 @@
         android:layout_marginTop="12dp"
         android:hint="Password"
         android:inputType="textPassword"
-        android:background="@drawable/input_design"
+        android:background="@drawable/input_design_dark"
         android:paddingHorizontal="14dp"
+        android:textColor="#F5FFF8"
+        android:textColorHint="#BAD2C5"
         app:layout_constraintTop_toBottomOf="@id/email_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -65,8 +71,10 @@
         android:layout_marginTop="12dp"
         android:hint="Confirm password"
         android:inputType="textPassword"
-        android:background="@drawable/input_design"
+        android:background="@drawable/input_design_dark"
         android:paddingHorizontal="14dp"
+        android:textColor="#F5FFF8"
+        android:textColorHint="#BAD2C5"
         app:layout_constraintTop_toBottomOf="@id/password_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -79,7 +87,9 @@
         android:text="Sign up"
         android:textAllCaps="false"
         android:textColor="#FFFFFF"
-        android:backgroundTint="#2E8B57"
+        android:textStyle="bold"
+        android:textSize="17sp"
+        android:background="@drawable/bg_confirm_button"
         app:layout_constraintTop_toBottomOf="@id/confirm_password_input"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
@@ -90,7 +100,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Already have an account? Log in"
-        android:textColor="#1E6D46"
+        android:textColor="#71F2A3"
         android:textStyle="bold"
         app:layout_constraintTop_toBottomOf="@id/signup_button"
         app:layout_constraintStart_toStartOf="parent"
