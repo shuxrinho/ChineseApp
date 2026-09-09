@@ -175,6 +175,35 @@ $$;
 
 grant execute on function public.update_profile_username(text) to authenticated;
 
+create or replace function public.check_username_availability(check_username text)
+returns table (available boolean)
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+    if check_username is null or btrim(check_username) = '' then
+        return query select false;
+        return;
+    end if;
+
+    if length(btrim(check_username)) < 3
+        or length(btrim(check_username)) > 24
+        or btrim(check_username) !~ '^[A-Za-z0-9_]+$' then
+        return query select false;
+        return;
+    end if;
+
+    return query select not exists (
+        select 1
+        from public.profiles p
+        where lower(p.username) = lower(btrim(check_username))
+    );
+end;
+$$;
+
+grant execute on function public.check_username_availability(text) to authenticated;
+
 -- Public avatar storage. Files are written under avatars/{auth.uid()}/avatar.jpg.
 insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
 values (

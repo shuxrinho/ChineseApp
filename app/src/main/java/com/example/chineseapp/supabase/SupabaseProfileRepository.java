@@ -81,6 +81,39 @@ public class SupabaseProfileRepository {
         });
     }
 
+    public void isUsernameAvailable(String username, ResultCallback<Boolean> callback) {
+        String cleanUsername = safe(username);
+        Log.d(TAG_PROFILE_REPO, "Queueing username availability check. usernameLength=" + cleanUsername.length());
+        io.execute(() -> {
+            try {
+                if (!SupabaseClient.hasConfig()) {
+                    throw new IllegalStateException("Supabase is not configured.");
+                }
+                if (!SessionManager.isLoggedIn(context)) {
+                    throw new IllegalStateException("Please log in to check username availability.");
+                }
+
+                JSONObject payload = new JSONObject().put("check_username", cleanUsername);
+                JSONObject response = client.postRpc("check_username_availability", payload, true);
+                JSONArray rows = new JSONArray(response.getString("raw"));
+                Log.d(TAG_PROFILE_REPO, "username availability check response rows=" + rows.length());
+
+                boolean available = false;
+                if (rows.length() > 0) {
+                    JSONObject row = rows.optJSONObject(0);
+                    if (row != null) {
+                        available = row.optBoolean("available", false);
+                    }
+                }
+
+                postSuccess(callback, available);
+            } catch (Exception e) {
+                Log.e(TAG_PROFILE_REPO, "username availability check failed: " + e.getMessage(), e);
+                postError(callback, e.getMessage() == null ? "Availability check failed." : e.getMessage());
+            }
+        });
+    }
+
     public void updateUsername(String username, ResultCallback<SupabaseUser> callback) {
         String cleanUsername = safe(username);
         Log.d(TAG_PROFILE_REPO, "Queueing username update. usernameLength=" + cleanUsername.length());

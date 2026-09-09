@@ -198,22 +198,25 @@ public class ChangeUsernameActivity extends AppCompatActivity {
     private void checkUsernameAvailability(String username) {
         setAvailabilityState(true, true); // loading state
 
-        executor.execute(() -> {
-            // TODO: Implement actual Supabase availability check
-            // For now, simulate with a placeholder
-            // When you add username column to users table in Supabase,
-            // implement the actual query here like:
-            // profileRepository.isUsernameAvailable(username, callback)
-            
-            // Placeholder: simulate availability check
-            // Replace this with actual Supabase query
-            boolean available = !username.equals("taken") && !username.equals(currentUsername);
-            
-            mainHandler.post(() -> {
-                isAvailable = available;
-                setAvailabilityState(false, available);
-                updateSaveButton();
-            });
+        profileRepository.isUsernameAvailable(username, new ResultCallback<Boolean>() {
+            @Override
+            public void onSuccess(Boolean available) {
+                mainHandler.post(() -> {
+                    isAvailable = available;
+                    setAvailabilityState(false, available);
+                    updateSaveButton();
+                });
+            }
+
+            @Override
+            public void onError(String message) {
+                mainHandler.post(() -> {
+                    isAvailable = false;
+                    setAvailabilityState(false, false);
+                    Toast.makeText(ChangeUsernameActivity.this, message, Toast.LENGTH_SHORT).show();
+                    updateSaveButton();
+                });
+            }
         });
     }
 

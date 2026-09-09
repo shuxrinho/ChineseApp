@@ -19,6 +19,7 @@ import com.example.chineseapp.Helpers.TextSanitizer;
 import com.example.chineseapp.Notifications.NotificationScheduler;
 import com.example.chineseapp.WordLists.ListRepository;
 import com.example.chineseapp.WordLists.WordItem;
+import com.example.chineseapp.supabase.SupabaseStreakRepository;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -56,6 +57,8 @@ public class WordListPracticeActivity extends AppCompatActivity {
     private boolean summaryShown = false;
 
     private static final int MISSED_THRESHOLD = 60;
+    
+    private SupabaseStreakRepository streakRepo;
 
     private static class CharStrokeData {
         final String character;
@@ -107,6 +110,7 @@ public class WordListPracticeActivity extends AppCompatActivity {
         }
 
         bindViews();
+        streakRepo = new SupabaseStreakRepository(this);
         listTitle = ListRepository.getListTitle(this, listIndex);
         tvListTitle.setText(listTitle);
 
@@ -230,9 +234,36 @@ public class WordListPracticeActivity extends AppCompatActivity {
 
         int score = drawingCanvas.scoreDrawing();
         item.scores.add(score);
+        
+        // Mark daily goal as completed on first character submission
+        if (wordIndex == 0 && charIndex == 0) {
+            markDailyGoalCompleted();
+        }
 
         charIndex++;
         showCurrentCharacter();
+    }
+    
+    private void markDailyGoalCompleted() {
+        // Check if already marked today locally
+        if (streakRepo != null && !streakRepo.isTodayCompletedLocally()) {
+            // Mark locally immediately
+            streakRepo.markGoalCompletedLocally();
+            
+            // Sync with Supabase in background
+            streakRepo.markGoalCompleted(new SupabaseStreakRepository.SimpleCallback() {
+                @Override
+                public void onSuccess() {
+                    // Successfully synced with server
+                }
+                
+                @Override
+                public void onError(String error) {
+                    // Local mark succeeded, server sync failed - will retry next time
+                    // User's streak is still counted locally
+                }
+            });
+        }
     }
 
     private void toggleHint() {
@@ -296,6 +327,7 @@ public class WordListPracticeActivity extends AppCompatActivity {
         if (attempted.isEmpty()) {
             message.append("No words were completed yet.\n");
         } else {
+            // Sync streak with Supabase (local already marked during practice)
             NotificationScheduler.markStreakCompleted(this);
             message.append("Best completed words: ");
             int bestCount = Math.min(3, attempted.size());
