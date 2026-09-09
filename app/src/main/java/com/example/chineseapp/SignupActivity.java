@@ -64,7 +64,7 @@ public class SignupActivity extends AppCompatActivity {
 
             signupButton.setEnabled(false);
             Log.d(TAG_SIGNUP_UI, "Calling authRepository.signUp...");
-            authRepository.signUp(email, password, username, new ResultCallback<>() {
+            authRepository.signUp(email, password, username, new ResultCallback<SupabaseUser>() {
                 @Override
                 public void onSuccess(SupabaseUser value) {
                     Log.d(TAG_SIGNUP_UI, "Signup success callback. userId=" + value.id + ", email=" + value.email + ", emailConfirmed=" + value.emailConfirmed);
@@ -78,8 +78,11 @@ public class SignupActivity extends AppCompatActivity {
                                 "Account created. Please check your email inbox (and spam folder) for the confirmation link. Click the link to activate your account, then log in.",
                                 Toast.LENGTH_LONG
                         ).show();
-                        startActivity(new Intent(SignupActivity.this, LoginActivity.class));
-                        finishAffinity();
+                        // Navigate to login so user can log in after confirming email
+                        Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
+                        intent.putExtra("CONFIRMATION_EMAIL", email);
+                        startActivity(intent);
+                        finish();
                     } else {
                         // Email already confirmed (rare case with certain configurations)
                         Toast.makeText(SignupActivity.this, "Account created. You are now signed in.", Toast.LENGTH_LONG).show();

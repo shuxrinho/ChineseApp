@@ -192,6 +192,11 @@ public class SupabaseAuthRepository {
         String raw = e.getMessage() != null ? e.getMessage() : "Unexpected error";
         String lower = raw.toLowerCase();
 
+        // Handle timeout errors - common when email confirmation takes time to process
+        if (lower.contains("timeout") || lower.contains("timed out")) {
+            return "Request timed out. This can happen if the server is slow to respond. Please check your internet connection and try again. If you just signed up, wait a moment and try logging in.";
+        }
+
         if (lower.contains("\"error_code\":\"email_not_confirmed\"")
                 || lower.contains("email not confirmed")) {
             return "Email not confirmed. Check inbox/spam, open the Supabase confirmation email, then log in.";

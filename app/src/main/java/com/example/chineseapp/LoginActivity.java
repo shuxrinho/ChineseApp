@@ -34,6 +34,13 @@ public class LoginActivity extends AppCompatActivity {
 
         signupLink.setOnClickListener(v -> startActivity(new Intent(this, SignupActivity.class)));
 
+        // Pre-fill email if coming from signup confirmation flow
+        String confirmationEmail = getIntent().getStringExtra("CONFIRMATION_EMAIL");
+        if (confirmationEmail != null && !confirmationEmail.isEmpty()) {
+            emailInput.setText(confirmationEmail);
+            Toast.makeText(this, "Please log in with your email to continue", Toast.LENGTH_LONG).show();
+        }
+
         loginButton.setOnClickListener(v -> {
             String email = emailInput.getText().toString().trim();
             String password = passwordInput.getText().toString().trim();
