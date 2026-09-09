@@ -72,6 +72,7 @@ public class ProfileActivity extends AppCompatActivity {
     private TextView profileEmail;
     private TextView usernameSecondary;
     private TextView emailSecondary;
+    private TextView emailNotConfirmedWarning;
     private boolean avatarUploadInProgress = false;
     private boolean usernameUpdateInProgress = false;
     private Uri pendingCameraPhotoUri;
@@ -134,7 +135,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail = findViewById(R.id.profile_email);
         usernameSecondary = findViewById(R.id.username_secondary);
         emailSecondary = findViewById(R.id.email_secondary);
-        TextView emailNotConfirmedWarning = findViewById(R.id.profile_email_not_confirmed);
+        emailNotConfirmedWarning = findViewById(R.id.profile_email_not_confirmed);
 
         renderUser(SessionManager.getUser(this), emailNotConfirmedWarning);
 
